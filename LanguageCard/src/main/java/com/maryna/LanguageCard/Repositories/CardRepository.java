@@ -45,8 +45,11 @@ public class CardRepository {
                 .query(CardModel.class)
                 .optional();
     }
-    public List<CardModel> getAll() {
-        return _jdbc.sql("SELECT * FROM CARDS")
+    public List<CardModel> getAll(int themaId) {
+        return _jdbc.sql("SELECT * FROM CARDS " +
+                        "JOIN themas_cards ON cards.id = themas_cards.card_id " +
+                        "WHERE themas_cards.thema_id = :themaId;")
+                .param("themaId", themaId)
                 .query(CardModel.class)
                 .list();
     }

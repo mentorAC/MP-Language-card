@@ -22,8 +22,8 @@ public class CardService {
         _cardSentanceRepository = cardSentanceRepository;
     }
 
-    public List<CardModel> getAll() {
-        return _cardRepository.getAll();
+    public List<CardModel> getAll(int themaId) {
+        return _cardRepository.getAll(themaId);
     }
 
     public CardModel getById(int id)throws BadRequestException {

@@ -25,6 +25,7 @@
         </td>
         <td>
           <button (click)="startEdit(themeItem)" class="btn btn-success">Change</button>
+          <button routerLink="/cards" [queryParams]="{thema: themeItem.id}" class="btn btn-success">Open</button>
         </td>
       </tr>
     }

@@ -10,10 +10,12 @@ import {
 import { FormsModule } from '@angular/forms';
 import { ThemaModel } from '../../Models/thema.model';
 import { ThemaService } from '../../services/thema.service';
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-thema-page',
-  imports: [FormsModule],
+  standalone: true,
+  imports: [FormsModule, RouterLink],
   templateUrl: './thema-page.html',
   styleUrl: './thema-page.css',
 })
@@ -63,5 +65,7 @@ export class ThemaPage implements OnInit {
       });
       this.canselEdit();
     });
+  }
+  openBtn(){
   }
 }

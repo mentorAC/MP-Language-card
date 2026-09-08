@@ -17,8 +17,8 @@ public class CardsController {
     }
 
     @GetMapping()
-    public List<CardModel> getCards() {
-        return _cardService.getAll();
+    public List<CardModel> getCards(@RequestParam int themaId) {
+        return _cardService.getAll(themaId);
     }
 
     @GetMapping("/{id}")
