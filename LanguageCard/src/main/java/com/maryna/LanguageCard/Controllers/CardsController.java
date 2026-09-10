@@ -27,8 +27,8 @@ public class CardsController {
     }
 
     @PostMapping()
-    public CardModel createCard(@RequestBody CardModel cardModel, @RequestParam int themaId)throws BadRequestException {
-        return _cardService.create(cardModel, themaId);
+    public CardModel createCard(@RequestBody CardModel cardModel)throws BadRequestException {
+        return _cardService.create(cardModel);
     }
 
     @PutMapping()

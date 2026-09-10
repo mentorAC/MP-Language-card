@@ -35,12 +35,17 @@ public class CardService {
     }
 
     @Transactional()
-    public CardModel create(CardModel cardModel, int themaId)throws BadRequestException {
-        if(!_themaRepository.exists(themaId)){
-            throw new BadRequestException("There is no such a theme!");
+    public CardModel create(CardModel cardModel)throws BadRequestException {
+        for (var themaId : cardModel.getThemaIds()) {
+            if (!_themaRepository.exists(themaId)) {
+                throw new BadRequestException("There is no such a theme!");
+            }
         }
-       cardModel = _cardRepository.create(cardModel);
-        _themaCardRepository.bind(cardModel.getId(), themaId);
+        cardModel = _cardRepository.create(cardModel);
+
+        for (var themaId : cardModel.getThemaIds()) {
+            _themaCardRepository.bind(cardModel.getId(), themaId);
+        }
         return cardModel;
     }
 

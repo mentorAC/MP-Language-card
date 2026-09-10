@@ -18,6 +18,10 @@ export const routes: Routes = [
         component: CardPage
     },
     {
+        path: 'card',
+        component: CardPage
+    },
+    {
         path: "**",
         component: Counter
     }

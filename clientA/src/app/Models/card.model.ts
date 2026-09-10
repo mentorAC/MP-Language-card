@@ -3,4 +3,5 @@ export class CardModel {
     word = "";
     translate = "";
     plural = "";
+    themaIds :number[] = []; 
 }

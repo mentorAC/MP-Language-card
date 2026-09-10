@@ -66,6 +66,4 @@ export class ThemaPage implements OnInit {
       this.canselEdit();
     });
   }
-  openBtn(){
-  }
 }

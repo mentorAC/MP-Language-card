@@ -1,10 +1,14 @@
 package com.maryna.LanguageCard.Models;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class CardModel {
-    int id;
-    String word;
-    String trans_word;
-    String plural;
+    private int id;
+    private String word;
+    private String trans_word;
+    private String plural;
+    private LinkedList<Integer> themaIds = new LinkedList<>();
 
     public int getId() {
         return id;
@@ -36,5 +40,13 @@ public class CardModel {
 
     public void setPlural(String plural) {
         this.plural = plural;
+    }
+
+    public LinkedList<Integer> getThemaIds() {
+        return themaIds;
+    }
+
+    public void setThemaIds(LinkedList<Integer> themaIds) {
+        this.themaIds = themaIds;
     }
 }

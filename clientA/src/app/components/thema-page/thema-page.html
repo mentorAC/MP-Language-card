@@ -1,5 +1,6 @@
 <div class="input-group mb-3">
   <input class="form-control" type="text" [(ngModel)]="thema.name" placeholder="Theme name" />
+  <button routerLink="/card" class="btn btn-success">Create a card</button>
   @if (thema.id === 0) {
     <button (click)="pressButton()" class="btn btn-warning">Add a new theme</button>
   } @else {
