@@ -1,1 +1,83 @@
-<p>new-card-page works!</p>
+<h1>Create a new card</h1>
+
+<!-- Word -->
+<div>
+  <label for="word">Word:</label>
+  <input
+    id="word"
+    [(ngModel)]="card().word"
+    placeholder="Write the word"
+  />
+</div>
+
+<br>
+
+<!-- Translation -->
+<div>
+  <label for="translate">Translation:</label>
+  <input
+    id="translate"
+    [(ngModel)]="card().transWord"
+    placeholder="Write the translation"
+  />
+</div>
+
+<br>
+
+<!-- Plural -->
+<div>
+  <label for="plural">Plural:</label>
+  <input
+    id="plural"
+    [(ngModel)]="card().plural"
+    placeholder="Write the plural form of the word"
+  />
+</div>
+
+<br>
+
+<!-- Themes -->
+<h3>Choose themes</h3>
+
+<div>
+  @for (thema of themas(); track thema.id) {
+    <div>
+      <label>
+        <input
+          type="checkbox"
+          (change)="toggleThema(thema.id, $event)"
+        />
+
+        {{ thema.name }}
+      </label>
+    </div>
+  }
+</div>
+
+<br>
+
+<!-- Buttons -->
+<div>
+  <button
+    type="button"
+    (click)="createButton()"
+    class="btn btn-success">
+    Save a card
+  </button>
+
+  <button
+    type="button"
+    routerLink="/thema"
+    class="btn btn-secondary">
+    Cancel
+  </button>
+
+  @if (card().id) {
+    <button
+      type="button"
+      (click)="pressDelete()"
+      class="btn btn-danger">
+      Delete
+    </button>
+  }
+</div>

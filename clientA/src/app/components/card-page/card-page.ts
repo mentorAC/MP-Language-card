@@ -49,12 +49,12 @@ export class CardPage implements OnInit {
     pressDelete() {
       this.cardService.delete(this.card.id)
       .subscribe(() => this.cards.update((l) => l.filter((t) => t.id !== this.card.id)));
-      this.canselEdit();
+      this.cancelEdit();
     }
     startEdit(card: CardModel) {
       this.card = { ...card };
     }
-    canselEdit() {
+    cancelEdit() {
       this.card = new CardModel();
     }
     saveEdit() {
@@ -67,7 +67,7 @@ export class CardPage implements OnInit {
           l[index] = res;
           return l;
         });
-        this.canselEdit();
+        this.cancelEdit();
       });
     }
 }

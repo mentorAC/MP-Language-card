@@ -45,12 +45,12 @@ export class ThemaPage implements OnInit {
   pressDelete() {
     this.themaService.delete(this.thema.id)
     .subscribe(() => this.themas.update((l) => l.filter((t) => t.id !== this.thema.id)));
-    this.canselEdit();
+    this.cancelEdit();
   }
   startEdit(theme: ThemaModel) {
     this.thema = { ...theme };
   }
-  canselEdit() {
+  cancelEdit() {
     this.thema = new ThemaModel();
   }
   saveEdit() {
@@ -63,7 +63,7 @@ export class ThemaPage implements OnInit {
         l[index] = res;
         return l;
       });
-      this.canselEdit();
+      this.cancelEdit();
     });
   }
 }

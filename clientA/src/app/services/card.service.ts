@@ -18,6 +18,6 @@ export class CardService {
         return this._client.delete<void>(`${this.url}/${id}`);
       }
       update(card: CardModel) {
-        return this._client.put<CardModel>(this.url, card);
+        return this._client.put<CardModel>(this.url, card); //`${this.url}/${card.id}`
       }
 }

@@ -23,4 +23,15 @@ public class ThemaCardRepository {
                 .query(Boolean.class)
                 .single();
     }
+    public void unbind(int cardId, int themaId) {
+        _jdbc.sql("""
+        DELETE FROM themas_cards
+        WHERE card_id = :cardId
+        AND thema_id = :themaId
+        """)
+                .param("cardId", cardId)
+                .param("themaId", themaId)
+                .update();
+    }
+
 }

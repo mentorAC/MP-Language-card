@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { ThemaPage } from './components/thema-page/thema-page';
 import { CardPage } from './components/card-page/card-page';
 import { Counter } from './counter/counter';
+import { NewCardPage } from './components/new-card-page/new-card-page';
 
 export const routes: Routes = [
     {
@@ -19,7 +20,7 @@ export const routes: Routes = [
     },
     {
         path: 'card',
-        component: CardPage
+        component: NewCardPage
     },
     {
         path: "**",

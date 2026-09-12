@@ -1,7 +1,7 @@
 export class CardModel {
     id = 0;
     word = "";
-    translate = "";
+    transWord = "";
     plural = "";
     themaIds :number[] = []; 
 }
