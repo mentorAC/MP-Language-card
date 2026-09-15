@@ -14,4 +14,5 @@ export class Counter {
   pressB(){
     this.count--;
   }
+  
 }

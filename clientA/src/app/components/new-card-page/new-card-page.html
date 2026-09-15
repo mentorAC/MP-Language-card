@@ -38,21 +38,7 @@
 
 <!-- Themes -->
 <h3>Choose themes</h3>
-
-<div>
-  @for (thema of themas(); track thema.id) {
-    <div>
-      <label>
-        <input
-          type="checkbox"
-          (change)="toggleThema(thema.id, $event)"
-        />
-
-        {{ thema.name }}
-      </label>
-    </div>
-  }
-</div>
+<button (click)="themasBtn()" class="btn btn-success">Choose the themes</button>
 
 <br>
 

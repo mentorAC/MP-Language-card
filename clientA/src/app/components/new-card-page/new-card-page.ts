@@ -33,8 +33,6 @@ export class NewCardPage {
   }
     //constructor(public client: HttpClient) {}
     createButton() {
-      this.modalService.open(SelectThemasModal);
-      return;
       if (!this.card().word.trim()) {
         console.log('Not working');
         return;
@@ -65,15 +63,13 @@ export class NewCardPage {
         this.editMode = false;
         });
     }*/
-    
-  toggleThema(themaId: number, event: Event) {
-  const checkbox = event.target as HTMLInputElement;
-  if (checkbox.checked) {
-    this.card().themaIds.push(themaId);
-  } else {
-    this.card().themaIds = this.card().themaIds.filter(
-      id => id !== themaId
-    );
-  }
+  selectedThemas : ThemaModel[] = []; 
+themasBtn(){
+  const modal = this.modalService.open(SelectThemasModal); 
+  modal.componentInstance.selectedThemas = this.selectedThemas;
+  modal.result.then(data => {
+    this.selectedThemas = data;
+    console.log(data);
+  })
 }
 }
