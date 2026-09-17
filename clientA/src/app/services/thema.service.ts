@@ -4,7 +4,7 @@ import { ThemaModel } from '../Models/thema.model';
 
 @Service()
 export class ThemaService {
-  private readonly url = 'http://localhost:8080/api/themas';
+  private readonly url = '/api/themas';
   private readonly _client = inject(HttpClient);
   getAll() {
     return this._client.get<ThemaModel[]>(this.url);

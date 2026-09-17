@@ -4,7 +4,7 @@ import { CardModel } from '../Models/card.model';
 
 @Service()
 export class CardService {
-    private readonly url = 'http://localhost:8080/api/cards';
+    private readonly url = '/api/cards';
       private readonly _client = inject(HttpClient);
       getAll(themaId: number) {
         const params = new HttpParams().append("themaId", themaId);

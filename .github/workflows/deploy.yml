@@ -1,0 +1,79 @@
+name: CI/CD Deploy to VPS
+
+on:
+  push:
+    branches: [deploy]
+  workflow_dispatch:
+
+env:
+  APP_DIR: mp-language-card
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.9.1
+      with:
+        ssh-private-key: ${{ secrets.VPS_KEY }}
+
+    - name: Add VPS to known_hosts
+      run: |
+        mkdir -p ~/.ssh
+        ssh-keyscan -H "${{ vars.VPS_HOST }}" >> ~/.ssh/known_hosts
+
+    - name: Create env file
+      run: |
+        cat <<EOF > .env
+        POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+        POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+        POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+        POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}
+        POSTGRES_PORT=${{ vars.POSTGRES_PORT || '5432' }}
+        EOF
+
+    - name: Build Docker image
+      run: docker compose -f docker-compose.yml build --pull
+
+    - name: Save Docker image as tar
+      run: |
+        mkdir -p images
+        docker save mp-language-card-app | gzip > images/mp-language-card-app.tar.gz
+
+    - name: Copy image and docker-compose to VPS
+      run: |
+        ssh "${{ secrets.VPS_USER }}@${{ vars.VPS_HOST }}" \
+          "mkdir -p ~/$APP_DIR"
+
+        scp images/*.tar.gz \
+          "${{ secrets.VPS_USER }}@${{ vars.VPS_HOST }}:/tmp/"
+
+        scp docker-compose.yml .env \
+          "${{ secrets.VPS_USER }}@${{ vars.VPS_HOST }}:~/$APP_DIR/"
+
+    - name: Deploy on VPS
+      run: |
+        ssh "${{ secrets.VPS_USER }}@${{ vars.VPS_HOST }}" \
+            APP_DIR="$APP_DIR" 'bash -se' <<'EOF'
+          set -euo pipefail
+
+          echo "Loading Docker image..."
+          for img in /tmp/*.tar.gz; do
+            gunzip -c "$img" | docker load
+            rm -f "$img"
+          done
+
+          echo "Starting container..."
+          cd "$HOME/$APP_DIR"
+          docker compose up -d --remove-orphans
+
+          echo "Cleaning up dangling images..."
+          docker image prune -f
+        EOF
