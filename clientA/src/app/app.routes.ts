@@ -23,6 +23,10 @@ export const routes: Routes = [
         component: NewCardPage
     },
     {
+        path: 'card/:id',
+        component: NewCardPage
+    },
+    {
         path: "**",
         component: Counter
     }

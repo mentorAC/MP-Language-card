@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CardService } from '../../services/card.service';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CardModel } from '../../Models/card.model';
@@ -15,46 +15,48 @@ import { SelectThemasModal } from '../thema-page/select-themas-modal/select-them
   templateUrl: './new-card-page.html',
   styleUrl: './new-card-page.css',
 })
-export class NewCardPage {
+export class NewCardPage implements OnInit {
+  ngOnInit(): void {
+    this.route.paramMap.subscribe(params => {
+      const id = params.get("id");
+      if(!id)
+        return;
+      console.log(id);
+    })
+  }
   private cardService = inject(CardService);
   private themaService = inject(ThemaService);
   toastr = inject(ToastrService);
   private modalService = inject(NgbModal);
   card = signal<CardModel>(new CardModel());
+  selectedThemas = signal<ThemaModel[]>([]);
   editMode = false;
-  themas = signal<ThemaModel[]>([]);
-  constructor(){
-    this.loadThemas();
-  }
-  loadThemas(){
-    this.themaService.getAll().subscribe(themas =>{
-      this.themas.set(themas);
-    });
-  }
-    //constructor(public client: HttpClient) {}
-    createButton() {
-      if (!this.card().word.trim()) {
-        console.log('Not working');
-        return;
-      }
-      this.cardService.create(this.card()).subscribe({
+  route = inject(ActivatedRoute);
+
+  //constructor(public client: HttpClient) {}
+  createButton() {
+    if (!this.card().word.trim()) {
+      console.log('Not working');
+      return;
+    }
+    this.card().themaIds = this.selectedThemas().map(t => t.id)
+    this.cardService.create(this.card()).subscribe({
       next: (res) => {
         this.card.set(res);
-        this.toastr.success("The card is created!");
+        this.toastr.success('The card is created!');
       },
       error: (err) => {
         console.error(err);
-      }
+      },
     });
-    }
-    pressDelete() {
-      this.cardService.delete(this.card().id)
-      .subscribe(() => {});
-    }
-    cancelEdit() {
-      this.editMode = false;
-    }
-    /*saveEdit() {
+  }
+  pressDelete() {
+    this.cardService.delete(this.card().id).subscribe(() => {});
+  }
+  cancelEdit() {
+    this.editMode = false;
+  }
+  /*saveEdit() {
       if (!this.card().word || !this.card.transWord || !this.card.plural) {
         return;
       }
@@ -63,13 +65,12 @@ export class NewCardPage {
         this.editMode = false;
         });
     }*/
-  selectedThemas : ThemaModel[] = []; 
-themasBtn(){
-  const modal = this.modalService.open(SelectThemasModal); 
-  modal.componentInstance.selectedThemas = this.selectedThemas;
-  modal.result.then(data => {
-    this.selectedThemas = data;
-    console.log(data);
-  })
-}
+  themasBtn() {
+    const modal = this.modalService.open(SelectThemasModal);
+    modal.componentInstance.selectedThemas = this.selectedThemas();
+    modal.result.then((data) => {
+      this.selectedThemas.set(data);
+      console.log(data);
+    });
+  }
 }

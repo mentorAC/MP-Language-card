@@ -24,7 +24,7 @@
           {{ cardItem.word }}
         </td>
         <td>
-          <button (click)="startEdit(cardItem)" class="btn btn-success">Change</button>
+          <button routerLink="/card/{{cardItem.id}}" class="btn btn-success">Change</button>
         </td>
       </tr>
     }

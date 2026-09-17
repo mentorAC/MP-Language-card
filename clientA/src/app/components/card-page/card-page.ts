@@ -10,11 +10,11 @@ import {
 import { FormsModule } from '@angular/forms';
 import { CardModel } from '../../Models/card.model';
 import { CardService } from '../../services/card.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-card-page',
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './card-page.html',
   styleUrl: './card-page.css',
 })

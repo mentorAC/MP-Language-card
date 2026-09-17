@@ -1,24 +1,19 @@
 <div class="modal-header">
-		<h4 class="modal-title" id="modal-basic-title">Themes</h4>
-		<button type="button" class="btn-close" aria-label="Close" 
-    (click)="modal.dismiss()"></button>
-	</div>
+  <h4 class="modal-title" id="modal-basic-title">Themes</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+</div>
 <div>
   @for (thema of themas(); track thema.id) {
     <div>
       <label>
-        <input
-          type="checkbox"
-          (change)="toggleThema(thema, $event)"
-        />
+        <input type="checkbox" [checked]="isThemaSelected(thema)"
+        (change)="toggleThema(thema, $event)" />
 
         {{ thema.name }}
       </label>
     </div>
-    
   }
 </div>
 <div class="modal-footer">
-		<button type="button" class="btn btn-outline-secondary" 
-    (click)="saveCloseBtn()">Save</button>
-	</div>
+  <button type="button" class="btn btn-outline-secondary" (click)="saveCloseBtn()">Save</button>
+</div>

@@ -14,22 +14,30 @@ export class SelectThemasModal implements OnInit {
   themas = signal<ThemaModel[]>([]);
   selectedThemas : ThemaModel[] =[];
   modal = inject(NgbActiveModal);
+  isChecked = true;
   ngOnInit(): void {
     this.themaService.getAll().subscribe(themas =>{
       this.themas.set(themas);
     });
+    console.log(this.selectedThemas);
   }
   toggleThema(selectedThema: ThemaModel, event: Event) {
   const checkbox = event.target as HTMLInputElement;
   if (checkbox.checked) {
-    this.selectedThemas.push(selectedThema);
+    if (!this.selectedThemas.some(t => t.id === selectedThema.id)) {
+      this.selectedThemas.push(selectedThema);
+    }
   } else {
     this.selectedThemas = this.selectedThemas.filter(
-      t => t !== selectedThema
+      t => t.id !== selectedThema.id
     );
   }
 }
  saveCloseBtn(){
   this.modal.close(this.selectedThemas);
  }
+ isThemaSelected(thema: ThemaModel): boolean {
+  return this.selectedThemas.some(t => t.id === thema.id);
+}
+
 }
