@@ -1,0 +1,46 @@
+// ---------------------------------------------------------------------------
+// Element-level polish on top of Bootstrap's reboot.
+// ---------------------------------------------------------------------------
+
+@use 'tokens' as t;
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3 {
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-size: 1.625rem;
+}
+
+h2 {
+  font-size: 1.25rem;
+}
+
+h3 {
+  font-size: 1.0625rem;
+}
+
+// One focus ring for everything that is not a form control — form controls
+// keep Bootstrap's border + halo, which reads better inside a field.
+:where(a, button, [tabindex]):focus-visible {
+  outline: 2px solid t.$brand-600;
+  outline-offset: 2px;
+  border-radius: t.$radius-sm;
+}
+
+::selection {
+  background: t.$brand-100;
+  color: t.$brand-700;
+}

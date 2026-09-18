@@ -1,0 +1,7 @@
+// The shell keeps the footer edge of the page at the bottom of the viewport
+// even when a page renders almost nothing.
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}

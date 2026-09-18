@@ -1,13 +1,18 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter } from '@angular/router';
-
-import { routes } from './app.routes';
 import { provideToastr } from 'ngx-toastr';
 
+import { routes } from './app.routes';
+
 export const appConfig: ApplicationConfig = {
-  providers: [ 
+  providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideToastr()
-  ]
+    provideToastr({
+      positionClass: 'toast-bottom-right',
+      timeOut: 2500,
+      progressBar: false,
+      preventDuplicates: true,
+    }),
+  ],
 };

@@ -1,0 +1,60 @@
+<app-page-header title="Themes" subtitle="Word sets you group your cards into.">
+  <a class="btn btn-primary" routerLink="/card">New card</a>
+</app-page-header>
+
+<form class="surface theme-form" (ngSubmit)="submit()">
+  <input
+    class="form-control"
+    type="text"
+    name="themeName"
+    autocomplete="off"
+    [(ngModel)]="draft().name"
+    [placeholder]="isEditing() ? 'Rename the theme' : 'Name a new theme'"
+  />
+
+  @if (isEditing()) {
+    <button type="submit" class="btn btn-primary" [disabled]="!draft().name.trim()">Save</button>
+    <button type="button" class="btn btn-ghost" (click)="resetDraft()">Cancel</button>
+    <button type="button" class="btn btn-ghost-danger" (click)="remove()">Delete</button>
+  } @else {
+    <button type="submit" class="btn btn-primary" [disabled]="!draft().name.trim()">
+      Add theme
+    </button>
+  }
+</form>
+
+@if (themas().length) {
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
+    @for (theme of themas(); track theme.id) {
+      <div class="col">
+        <article
+          class="card card-interactive h-100 theme-card"
+          [class.theme-card--editing]="draft().id === theme.id"
+        >
+          <div class="card-body">
+            <span class="badge-soft">#{{ theme.id }}</span>
+            <h2 class="theme-card__name">{{ theme.name }}</h2>
+          </div>
+
+          <div class="card-footer theme-card__actions">
+            <a
+              class="btn btn-sm btn-outline-secondary"
+              routerLink="/cards"
+              [queryParams]="{ thema: theme.id }"
+            >
+              Open
+            </a>
+            <button type="button" class="btn btn-sm btn-ghost" (click)="startEdit(theme)">
+              Rename
+            </button>
+          </div>
+        </article>
+      </div>
+    }
+  </div>
+} @else {
+  <app-empty-state
+    title="No themes yet"
+    text="Add your first theme above — cards are grouped by theme."
+  />
+}

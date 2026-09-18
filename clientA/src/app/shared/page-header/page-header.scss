@@ -1,0 +1,25 @@
+@use 'styles/tokens' as t;
+
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+.page-header__title {
+  margin: 0;
+}
+
+.page-header__subtitle {
+  margin: 0.25rem 0 0;
+  color: t.$ink-500;
+}
+
+.page-header__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}

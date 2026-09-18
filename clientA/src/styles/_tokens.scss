@@ -1,0 +1,50 @@
+// ---------------------------------------------------------------------------
+// Design tokens — the only file that holds raw colour and size values.
+// Bootstrap is configured from these in styles.scss, and our own overrides
+// read them from here, so the whole look can be re-tuned in one place.
+// ---------------------------------------------------------------------------
+
+// Warm neutrals. A paper-like background keeps the UI calm next to the accent.
+$ink-950: #171412;
+$ink-900: #211d1a;
+$ink-700: #4a423d;
+$ink-500: #7d736c;
+$ink-400: #a8a09a;
+$ink-300: #d9d4cf;
+$ink-200: #e9e5e1;
+$ink-100: #f3f0ed;
+$ink-050: #faf9f7;
+$surface: #ffffff;
+
+// A single accent, used sparingly: primary actions and the active nav item.
+$brand-700: #0c5f59;
+$brand-600: #0f766e;
+$brand-100: #d7ece8;
+$brand-050: #eef7f5;
+
+// Semantic colours, muted to sit next to the accent without shouting.
+$danger-600: #b42318;
+$success-600: #15803d;
+$warning-600: #b45309;
+
+// Rounded, but not pill-shaped: 12px on containers, 10px on controls.
+$radius-sm: 0.5rem;
+$radius: 0.625rem;
+$radius-lg: 0.75rem;
+$radius-xl: 1rem;
+
+// Borders carry the structure, so shadows stay almost invisible.
+$shadow-sm: 0 1px 2px rgba($ink-950, 0.04);
+$shadow-md: 0 12px 32px -20px rgba($ink-950, 0.35);
+
+$font-sans:
+  system-ui,
+  -apple-system,
+  'Segoe UI',
+  Roboto,
+  'Helvetica Neue',
+  Arial,
+  sans-serif;
+
+// Reading width of the page content.
+$shell-width: 64rem;

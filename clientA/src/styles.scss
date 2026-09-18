@@ -1,0 +1,63 @@
+// ---------------------------------------------------------------------------
+// Global stylesheet.
+//
+// Bootstrap stays the base of the UI: the grid, the utilities and every
+// component come from it untouched. We only re-point its variables at our
+// design tokens, and then patch a handful of components by hand below.
+// ---------------------------------------------------------------------------
+
+@use 'styles/tokens' as t;
+
+@use 'bootstrap/scss/bootstrap' with (
+  // Palette
+  $primary: t.$brand-600,
+  $secondary: t.$ink-500,
+  $danger: t.$danger-600,
+  $success: t.$success-600,
+  $warning: t.$warning-600,
+  $body-bg: t.$ink-050,
+  $body-color: t.$ink-900,
+  $body-secondary-color: t.$ink-500,
+  $body-tertiary-bg: t.$ink-100,
+  $border-color: t.$ink-200,
+
+  // Typography
+  $font-family-sans-serif: t.$font-sans,
+  $font-size-base: 0.9375rem,
+  $line-height-base: 1.6,
+  $headings-font-weight: 650,
+  $headings-color: t.$ink-950,
+  $link-color: t.$brand-700,
+  $link-decoration: none,
+  $link-hover-decoration: underline,
+
+  // Shape
+  $border-radius: t.$radius,
+  $border-radius-sm: t.$radius-sm,
+  $border-radius-lg: t.$radius-lg,
+  $border-radius-xl: t.$radius-xl,
+
+  // Controls
+  $btn-font-weight: 550,
+  $btn-focus-width: 0.1875rem,
+  $input-border-color: t.$ink-300,
+  $input-placeholder-color: t.$ink-400,
+  $input-focus-box-shadow: 0 0 0 0.1875rem t.$brand-100,
+  $form-label-font-weight: 550,
+
+  // Containers
+  $card-border-color: t.$ink-200,
+  $card-border-radius: t.$radius-lg,
+  $card-spacer-y: 1.125rem,
+  $card-spacer-x: 1.25rem,
+  $card-cap-bg: transparent,
+  $table-border-color: t.$ink-200,
+  $table-hover-bg: t.$ink-050,
+  $table-th-font-weight: 600,
+  $modal-content-border-color: t.$ink-200,
+  $modal-content-border-radius: t.$radius-xl,
+  $modal-backdrop-opacity: 0.35
+);
+
+@use 'styles/base';
+@use 'styles/components';

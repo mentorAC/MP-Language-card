@@ -1,0 +1,28 @@
+@use 'styles/tokens' as t;
+
+.thema-list {
+  max-height: 20rem;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.thema-option {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  width: 100%;
+  padding: 0.5rem 0.625rem;
+  border-radius: t.$radius-sm;
+  cursor: pointer;
+
+  &:hover {
+    background: t.$ink-100;
+  }
+
+  .form-check-input {
+    margin: 0;
+    flex: none;
+  }
+}

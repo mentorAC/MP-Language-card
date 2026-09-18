@@ -1,0 +1,20 @@
+@use 'styles/tokens' as t;
+
+.empty-state {
+  padding: 3rem 1.5rem;
+  border: 1px dashed t.$ink-300;
+  border-radius: t.$radius-lg;
+  text-align: center;
+}
+
+.empty-state__title {
+  margin: 0;
+  color: t.$ink-900;
+  font-weight: 600;
+}
+
+.empty-state__text {
+  margin: 0.375rem 0 0;
+  color: t.$ink-500;
+  font-size: 0.9375rem;
+}

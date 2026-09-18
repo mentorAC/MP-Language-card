@@ -1,0 +1,32 @@
+<div class="modal-header">
+  <h2 class="modal-title">Choose themes</h2>
+  <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+</div>
+
+<div class="modal-body">
+  @if (themas().length) {
+    <ul class="thema-list">
+      @for (thema of themas(); track thema.id) {
+        <li>
+          <label class="thema-option">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              [checked]="isSelected(thema)"
+              (change)="toggle(thema, $event)"
+            />
+            <span>{{ thema.name }}</span>
+          </label>
+        </li>
+      }
+    </ul>
+  } @else {
+    <p class="text-body-secondary mb-0">There are no themes yet.</p>
+  }
+</div>
+
+<div class="modal-footer">
+  <span class="me-auto text-body-secondary small">{{ selectedThemas.length }} selected</span>
+  <button type="button" class="btn btn-ghost" (click)="modal.dismiss()">Cancel</button>
+  <button type="button" class="btn btn-primary" (click)="modal.close(selectedThemas)">Done</button>
+</div>

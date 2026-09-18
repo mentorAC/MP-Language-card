@@ -1,0 +1,20 @@
+@use 'styles/tokens' as t;
+
+.not-found {
+  max-width: 28rem;
+  margin: 4rem auto;
+  text-align: center;
+}
+
+.not-found__code {
+  margin: 0 0 0.5rem;
+  color: t.$ink-300;
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.btn {
+  margin-top: 1.25rem;
+}

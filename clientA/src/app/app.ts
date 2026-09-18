@@ -1,14 +1,12 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { Counter } from "./counter/counter";
-import { ThemaPage } from './components/thema-page/thema-page';
+import { AppTopbar } from './layout/app-topbar/app-topbar';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Counter, ThemaPage],
+  imports: [RouterOutlet, AppTopbar],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrl: './app.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class App {
-
-}
+export class App {}
