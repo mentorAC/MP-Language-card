@@ -62,6 +62,7 @@ jobs:
         POSTGRES_DB=${{ vars.POSTGRES_DB }}
         POSTGRES_HOST=${{ vars.POSTGRES_HOST }}
         POSTGRES_PORT=${{ vars.POSTGRES_PORT || '5432' }}
+        LOG_FORMAT=${{ vars.LOG_FORMAT }}
         EOF
 
     - name: Build Docker image
