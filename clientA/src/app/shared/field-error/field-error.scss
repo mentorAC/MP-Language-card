@@ -1,0 +1,7 @@
+@use 'styles/tokens' as t;
+
+.field-error {
+  margin: 0.25rem 0 0;
+  color: t.$danger-600;
+  font-size: 0.8125rem;
+}

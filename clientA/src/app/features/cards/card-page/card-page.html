@@ -1,53 +1,20 @@
 <app-page-header
-  title="Cards"
-  [subtitle]="themaName() ? 'Theme: ' + themaName() : 'All cards of the selected theme.'"
+  [title]="card()?.word || 'Edit card'"
+  subtitle="A word, its translation and the themes it belongs to."
 >
-  <a class="btn btn-outline-secondary" routerLink="/thema">Back to themes</a>
-  <a class="btn btn-primary" routerLink="/card">New card</a>
+  <a class="btn btn-outline-secondary" routerLink="/cards">All cards</a>
+  <a class="btn btn-primary" routerLink="/cards/new">New card</a>
 </app-page-header>
 
-<form class="surface card-form" (ngSubmit)="create()">
-  <input
-    class="form-control"
-    type="text"
-    name="word"
-    autocomplete="off"
-    placeholder="Add a word quickly"
-    [(ngModel)]="draft().word"
+@if (card(); as loaded) {
+  <app-card-form
+    [card]="loaded"
+    [saving]="saving()"
+    [deletable]="true"
+    submitLabel="Save changes"
+    (save)="save($event)"
+    (remove)="remove()"
   />
-  <button type="submit" class="btn btn-primary" [disabled]="!draft().word.trim()">Add word</button>
-</form>
-
-@if (cards().length) {
-  <div class="surface cards-table">
-    <div class="table-responsive">
-      <table class="table table-hover align-middle mb-0">
-        <thead>
-          <tr>
-            <th scope="col">Word</th>
-            <th scope="col">Translation</th>
-            <th scope="col">Plural</th>
-            <th scope="col" class="text-end">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (card of cards(); track card.id) {
-            <tr>
-              <td class="fw-semibold">{{ card.word }}</td>
-              <td>{{ card.transWord || '—' }}</td>
-              <td class="text-body-secondary">{{ card.plural || '—' }}</td>
-              <td class="text-end">
-                <a class="btn btn-sm btn-ghost" [routerLink]="['/card', card.id]">Edit</a>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  </div>
-} @else {
-  <app-empty-state
-    title="This theme has no cards yet"
-    text="Add a word above, or open the full form to fill in the translation too."
-  />
+} @else if (loading()) {
+  <p class="text-body-secondary">Loading the card…</p>
 }

@@ -1,25 +1,37 @@
 package com.maryna.LanguageCard.Models;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class SentanceModel {
-    int id;
-    String text;
-    String translate;
-    public int getId(){
+    private int id;
+
+    @NotBlank(message = "The sentence text is required.")
+    private String text;
+
+    @NotBlank(message = "The sentence translation is required.")
+    private String translate;
+
+    public int getId() {
         return id;
     }
-    public String getText(){
-        return text;
-    }
-    public String getTranslate(){
-        return translate;
-    }
-    public void setId(int id){
+
+    public void setId(int id) {
         this.id = id;
     }
-    public void setText(String text){
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
         this.text = text;
     }
-    public void setTranslate(String translate){
+
+    public String getTranslate() {
+        return translate;
+    }
+
+    public void setTranslate(String translate) {
         this.translate = translate;
     }
 }

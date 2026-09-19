@@ -1,0 +1,101 @@
+<form class="card card-form" [formGroup]="form" (ngSubmit)="submit()">
+  <div class="card-body">
+    <div class="mb-3">
+      <label class="form-label" for="word">Word</label>
+      <input
+        id="word"
+        class="form-control"
+        formControlName="word"
+        autocomplete="off"
+        placeholder="The word you are learning"
+        [class.is-invalid]="
+          form.controls.word.invalid && (form.controls.word.touched || submitted())
+        "
+      />
+      <app-field-error [control]="form.controls.word" label="The word" [submitted]="submitted()" />
+    </div>
+
+    <div class="row g-3">
+      <div class="col-sm-6">
+        <label class="form-label" for="transWord">Translation</label>
+        <input
+          id="transWord"
+          class="form-control"
+          formControlName="transWord"
+          autocomplete="off"
+          placeholder="What it means"
+          [class.is-invalid]="
+            form.controls.transWord.invalid && (form.controls.transWord.touched || submitted())
+          "
+        />
+        <app-field-error
+          [control]="form.controls.transWord"
+          label="The translation"
+          [submitted]="submitted()"
+        />
+      </div>
+
+      <div class="col-sm-6">
+        <label class="form-label" for="plural">Plural</label>
+        <input
+          id="plural"
+          class="form-control"
+          formControlName="plural"
+          autocomplete="off"
+          placeholder="Plural form, if there is one"
+          [class.is-invalid]="form.controls.plural.invalid && form.controls.plural.touched"
+        />
+        <app-field-error [control]="form.controls.plural" label="The plural form" />
+      </div>
+    </div>
+
+    <hr class="my-4" />
+
+    <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+      <span class="form-label mb-0">Themes</span>
+      <button type="button" class="btn btn-sm btn-outline-secondary" (click)="openThemaPicker()">
+        Choose themes
+      </button>
+    </div>
+
+    @if (selectedThemas().length) {
+      <ul class="thema-chips">
+        @for (thema of selectedThemas(); track thema.id) {
+          <li class="thema-chip">
+            {{ thema.name }}
+            <button
+              type="button"
+              class="thema-chip__remove"
+              [attr.aria-label]="'Remove ' + thema.name"
+              (click)="removeThema(thema.id)"
+            >
+              &times;
+            </button>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="form-text mb-0">
+        No themes chosen yet — the card will not show up under any theme.
+      </p>
+    }
+  </div>
+
+  <div class="card-footer form-actions">
+    <button type="submit" class="btn btn-primary" [disabled]="saving()">
+      {{ submitLabel() }}
+    </button>
+    <a class="btn btn-ghost" routerLink="/cards">Cancel</a>
+
+    @if (deletable()) {
+      <button
+        type="button"
+        class="btn btn-ghost-danger ms-auto"
+        [disabled]="saving()"
+        (click)="remove.emit()"
+      >
+        Delete
+      </button>
+    }
+  </div>
+</form>

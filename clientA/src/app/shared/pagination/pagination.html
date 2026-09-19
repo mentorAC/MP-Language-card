@@ -1,0 +1,54 @@
+@if (total()) {
+  <nav class="pagination" aria-label="Pagination">
+    <p class="pagination__summary">
+      {{ firstItem() }}–{{ lastItem() }} of {{ total() }} {{ label() }}
+    </p>
+
+    @if (hasPages()) {
+      <ul class="pagination__pages">
+        <li>
+          <button
+            type="button"
+            class="pagination__button"
+            [disabled]="page() === 0"
+            (click)="go(page() - 1)"
+            aria-label="Previous page"
+          >
+            ‹
+          </button>
+        </li>
+
+        @for (entry of pageNumbers(); track $index) {
+          <li>
+            @if (isGap(entry)) {
+              <span class="pagination__gap" aria-hidden="true">{{ entry }}</span>
+            } @else {
+              <button
+                type="button"
+                class="pagination__button"
+                [class.pagination__button--current]="entry === page()"
+                [attr.aria-current]="entry === page() ? 'page' : null"
+                [attr.aria-label]="'Page ' + (entry + 1)"
+                (click)="go(entry)"
+              >
+                {{ entry + 1 }}
+              </button>
+            }
+          </li>
+        }
+
+        <li>
+          <button
+            type="button"
+            class="pagination__button"
+            [disabled]="page() >= totalPages() - 1"
+            (click)="go(page() + 1)"
+            aria-label="Next page"
+          >
+            ›
+          </button>
+        </li>
+      </ul>
+    }
+  </nav>
+}

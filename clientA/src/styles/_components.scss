@@ -182,25 +182,3 @@
 .modal-title {
   font-size: 1.0625rem;
 }
-
-// --- Toasts ----------------------------------------------------------------
-
-// ngx-toastr ships its own CSS; trim it down to match the rest of the UI.
-.toast-container .ngx-toastr {
-  padding: 0.875rem 1rem 0.875rem 3rem;
-  border-radius: t.$radius-lg;
-  box-shadow: t.$shadow-md;
-  font-size: 0.875rem;
-
-  &:hover {
-    box-shadow: t.$shadow-md;
-  }
-}
-
-.toast-success {
-  background-color: t.$brand-600;
-}
-
-.toast-error {
-  background-color: t.$danger-600;
-}

@@ -6,79 +6,156 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { apiErrorMessage } from '../../../core/api-error';
+import { emptyPage, PageModel } from '../../../core/models/page.model';
 import { ThemaModel } from '../../../core/models/thema.model';
 import { ThemaService } from '../../../core/services/thema.service';
 import { EmptyState } from '../../../shared/empty-state/empty-state';
+import { FieldError } from '../../../shared/field-error/field-error';
 import { PageHeader } from '../../../shared/page-header/page-header';
+import { Pagination } from '../../../shared/pagination/pagination';
+
+/** Three columns on a wide screen, four rows of them. */
+const PAGE_SIZE = 12;
 
 @Component({
   selector: 'app-thema-page',
-  imports: [FormsModule, RouterLink, PageHeader, EmptyState],
+  imports: [ReactiveFormsModule, RouterLink, PageHeader, EmptyState, FieldError, Pagination],
   templateUrl: './thema-page.html',
   styleUrl: './thema-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ThemaPage implements OnInit {
   private readonly themaService = inject(ThemaService);
+  private readonly toastr = inject(ToastrService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
-  readonly themas = signal<ThemaModel[]>([]);
+  readonly form = inject(FormBuilder).nonNullable.group({
+    name: ['', [Validators.required, Validators.maxLength(100)]],
+  });
 
-  /** The theme in the form: a blank one while creating, a copy while renaming. */
-  readonly draft = signal<ThemaModel>(new ThemaModel());
-  readonly isEditing = computed(() => this.draft().id !== 0);
+  readonly pageData = signal<PageModel<ThemaModel>>(emptyPage(PAGE_SIZE));
+  /** The page the URL currently points at — see `reload`. */
+  private readonly urlPage = signal(0);
+  readonly loading = signal(false);
+  readonly saving = signal(false);
+  readonly submitted = signal(false);
+
+  /** 0 while adding a theme, the theme's id while renaming one. */
+  readonly editingId = signal(0);
+  readonly isEditing = computed(() => this.editingId() !== 0);
 
   ngOnInit(): void {
-    this.themaService.getAll().subscribe((themas) => this.themas.set(themas));
-  }
-
-  submit(): void {
-    if (this.isEditing()) {
-      this.saveEdit();
-    } else {
-      this.create();
-    }
-  }
-
-  create(): void {
-    const name = this.draft().name.trim();
-    if (!name) {
-      return;
-    }
-
-    this.themaService.create(this.draft()).subscribe((created) => {
-      this.themas.update((list) => [...list, created]);
-      this.resetDraft();
+    // The page number lives in the URL, so a pager step is a real history entry
+    // and a link to page 3 still opens page 3.
+    this.route.queryParamMap.subscribe((params) => {
+      const page = Math.max(0, Number(params.get('page')) || 0);
+      this.urlPage.set(page);
+      this.load(page);
     });
   }
 
-  saveEdit(): void {
-    if (!this.draft().name.trim()) {
+  submit(): void {
+    this.submitted.set(true);
+    if (this.form.invalid || this.saving()) {
       return;
     }
 
-    this.themaService.update(this.draft()).subscribe((updated) => {
-      // A new array, not an in-place write: a signal only notifies when the
-      // reference it holds actually changes.
-      this.themas.update((list) => list.map((t) => (t.id === updated.id ? updated : t)));
-      this.resetDraft();
+    const name = this.form.getRawValue().name.trim();
+    const editingId = this.editingId();
+
+    this.saving.set(true);
+    const request = editingId
+      ? this.themaService.update({ id: editingId, name })
+      : this.themaService.create({ id: 0, name });
+
+    request.subscribe({
+      next: () => {
+        this.saving.set(false);
+        this.toastr.success(editingId ? 'The theme is renamed' : 'The theme is added');
+        this.resetForm();
+        // A new theme is the newest row, so it lands on the first page.
+        this.reload(editingId ? this.pageData().page : 0);
+      },
+      error: (error: unknown) => {
+        this.saving.set(false);
+        this.toastr.error(apiErrorMessage(error, 'Could not save the theme'));
+      },
     });
   }
 
   remove(): void {
-    const id = this.draft().id;
-    this.themaService.delete(id).subscribe(() => {
-      this.themas.update((list) => list.filter((t) => t.id !== id));
-      this.resetDraft();
+    const id = this.editingId();
+    if (!id || this.saving()) {
+      return;
+    }
+
+    this.saving.set(true);
+    this.themaService.delete(id).subscribe({
+      next: () => {
+        this.saving.set(false);
+        this.toastr.success('The theme is deleted');
+        this.resetForm();
+
+        // Deleting the only row of the last page would leave us on a page that
+        // no longer exists.
+        const page = this.pageData();
+        this.reload(page.items.length === 1 && page.page > 0 ? page.page - 1 : page.page);
+      },
+      error: (error: unknown) => {
+        this.saving.set(false);
+        this.toastr.error(apiErrorMessage(error, 'Could not delete the theme'));
+      },
     });
   }
 
   startEdit(thema: ThemaModel): void {
-    this.draft.set({ ...thema });
+    this.editingId.set(thema.id);
+    this.submitted.set(false);
+    this.form.reset({ name: thema.name });
   }
 
-  resetDraft(): void {
-    this.draft.set(new ThemaModel());
+  resetForm(): void {
+    this.editingId.set(0);
+    this.submitted.set(false);
+    this.form.reset({ name: '' });
+  }
+
+  /**
+   * Shows `page` again after a change. Navigating to the page we are already on
+   * emits nothing, so in that case the list is refetched directly.
+   */
+  private reload(page: number): void {
+    if (page === this.urlPage()) {
+      this.load(page);
+    } else {
+      this.goToPage(page);
+    }
+  }
+
+  goToPage(page: number): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { page: page || null },
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  private load(page: number): void {
+    this.loading.set(true);
+    this.themaService.getPage(page, PAGE_SIZE).subscribe({
+      next: (data) => {
+        this.pageData.set(data);
+        this.loading.set(false);
+      },
+      error: (error: unknown) => {
+        this.loading.set(false);
+        this.toastr.error(apiErrorMessage(error, 'Could not load the themes'));
+      },
+    });
   }
 }

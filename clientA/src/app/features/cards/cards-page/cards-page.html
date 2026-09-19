@@ -1,0 +1,86 @@
+<app-page-header title="Cards" [subtitle]="subtitle()">
+  @if (themaId()) {
+    <a class="btn btn-outline-secondary" routerLink="/cards">All cards</a>
+  }
+  <a class="btn btn-outline-secondary" routerLink="/themas">Themes</a>
+  <a class="btn btn-primary" routerLink="/cards/new">New card</a>
+</app-page-header>
+
+<form class="surface card-form" [formGroup]="form" (ngSubmit)="create()">
+  <div class="card-form__field">
+    <label class="visually-hidden" for="quickWord">Word</label>
+    <input
+      id="quickWord"
+      class="form-control"
+      formControlName="word"
+      autocomplete="off"
+      placeholder="Add a word quickly"
+      [class.is-invalid]="form.controls.word.invalid && (form.controls.word.touched || submitted())"
+    />
+    <app-field-error [control]="form.controls.word" label="The word" [submitted]="submitted()" />
+  </div>
+
+  <div class="card-form__field">
+    <label class="visually-hidden" for="quickTranslation">Translation</label>
+    <input
+      id="quickTranslation"
+      class="form-control"
+      formControlName="transWord"
+      autocomplete="off"
+      placeholder="…and its translation"
+      [class.is-invalid]="
+        form.controls.transWord.invalid && (form.controls.transWord.touched || submitted())
+      "
+    />
+    <app-field-error
+      [control]="form.controls.transWord"
+      label="The translation"
+      [submitted]="submitted()"
+    />
+  </div>
+
+  <button type="submit" class="btn btn-primary" [disabled]="saving()">Add card</button>
+</form>
+
+@if (pageData().items.length) {
+  <div class="surface cards-table" [class.is-loading]="loading()">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead>
+          <tr>
+            <th scope="col">Word</th>
+            <th scope="col">Translation</th>
+            <th scope="col">Plural</th>
+            <th scope="col" class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (card of pageData().items; track card.id) {
+            <tr>
+              <td class="fw-semibold">{{ card.word }}</td>
+              <td>{{ card.transWord || '—' }}</td>
+              <td class="text-body-secondary">{{ card.plural || '—' }}</td>
+              <td class="text-end">
+                <a class="btn btn-sm btn-ghost" [routerLink]="['/cards', card.id]">Edit</a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <app-pagination
+    [page]="pageData().page"
+    [size]="pageData().size"
+    [total]="pageData().total"
+    [totalPages]="pageData().totalPages"
+    label="cards"
+    (pageChange)="goToPage($event)"
+  />
+} @else if (!loading()) {
+  <app-empty-state
+    [title]="themaId() ? 'This theme has no cards yet' : 'No cards yet'"
+    text="Add a word above, or open the full form to fill in the plural and the themes too."
+  />
+}

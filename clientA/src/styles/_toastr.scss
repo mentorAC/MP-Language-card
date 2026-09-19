@@ -1,0 +1,167 @@
+// ---------------------------------------------------------------------------
+// Toasts.
+//
+// ngx-toastr ships four solid-colour boxes with white text. The rest of the UI
+// is light surfaces with ink text and a single accent, so the toasts are
+// rebuilt to match: a white card, a coloured rail down its left edge, a
+// coloured icon and a matching progress bar.
+//
+// Every rule is scoped to `.app-toast` — the extra class `provideToastr` puts
+// on each toast in app.config.ts — so it outranks the library's own CSS
+// without a single `!important`.
+// ---------------------------------------------------------------------------
+
+@use 'sass:meta';
+@use 'sass:string';
+@use 'tokens' as t;
+
+// A `#` cannot appear raw inside a data: URI, so colours go in as %23rrggbb.
+@function icon-color($color) {
+  @return '%23' + string.slice(meta.inspect($color), 2);
+}
+
+@function toast-icon($path, $color) {
+  @return url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='#{icon-color($color)}'%3E%3Cpath d='#{$path}'/%3E%3C/svg%3E");
+}
+
+// Bootstrap Icons, the filled variants.
+$icon-success: 'M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z';
+$icon-error: 'M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z';
+$icon-info: 'M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z';
+$icon-warning: 'M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z';
+
+// --- Container -------------------------------------------------------------
+
+.toast-container {
+  // Above Bootstrap's modal (1055): a failure while a dialog is open still has
+  // to be readable.
+  z-index: 1080;
+}
+
+.toast-container.toast-bottom-right {
+  right: 1.25rem;
+  bottom: 1.25rem;
+}
+
+// --- The toast -------------------------------------------------------------
+
+.toast-container .ngx-toastr.app-toast {
+  width: 21rem;
+  max-width: calc(100vw - 2.5rem);
+  margin: 0 0 0.625rem;
+  padding: 0.8125rem 2.25rem 0.8125rem 2.875rem;
+  border: 1px solid t.$ink-200;
+  border-left: 3px solid t.$ink-300;
+  border-radius: t.$radius-lg;
+  background-color: t.$surface;
+  background-position: 1rem center;
+  background-size: 1.125rem;
+  box-shadow: t.$shadow-md;
+  color: t.$ink-900;
+  font-size: 0.8125rem;
+
+  &:hover {
+    box-shadow:
+      t.$shadow-md,
+      0 0 0 3px t.$ink-100;
+  }
+}
+
+.app-toast .toast-title {
+  color: t.$ink-950;
+  font-size: 0.875rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+// Only pad the message when there is a title above it.
+.app-toast .toast-title + .toast-message {
+  margin-top: 0.125rem;
+}
+
+.app-toast .toast-message {
+  color: t.$ink-700;
+  line-height: 1.5;
+
+  a,
+  label {
+    color: t.$brand-700;
+  }
+
+  a:hover {
+    color: t.$brand-600;
+    text-decoration: underline;
+  }
+}
+
+// --- Close button ----------------------------------------------------------
+
+.app-toast .toast-close-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  float: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  color: t.$ink-400;
+  font-size: 1.125rem;
+  font-weight: 400;
+  line-height: 1;
+  text-shadow: none;
+  opacity: 1;
+  border-radius: t.$radius-sm;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+
+  &:hover,
+  &:focus {
+    background: t.$ink-100;
+    color: t.$ink-900;
+    opacity: 1;
+  }
+}
+
+// --- Progress bar ----------------------------------------------------------
+
+.app-toast .toast-progress {
+  height: 0.1875rem;
+  border-radius: 0 t.$radius-sm t.$radius-sm 0;
+  background-color: t.$ink-300;
+  opacity: 1;
+}
+
+// --- One rule per kind -----------------------------------------------------
+
+@each $name, $color,
+  $icon
+    in (
+      (success, t.$success-600, $icon-success),
+      (error, t.$danger-600, $icon-error),
+      (info, t.$brand-600, $icon-info),
+      (warning, t.$warning-600, $icon-warning)
+    )
+{
+  .toast-container .ngx-toastr.app-toast.toast-#{$name} {
+    border-left-color: $color;
+    background-image: toast-icon($icon, $color);
+  }
+
+  .app-toast.toast-#{$name} .toast-progress {
+    background-color: $color;
+  }
+}
+
+// --- Small screens ---------------------------------------------------------
+
+@media (max-width: 30rem) {
+  .toast-container.toast-bottom-right {
+    right: 0.75rem;
+    bottom: 0.75rem;
+    left: 0.75rem;
+  }
+
+  .toast-container .ngx-toastr.app-toast {
+    width: 100%;
+  }
+}

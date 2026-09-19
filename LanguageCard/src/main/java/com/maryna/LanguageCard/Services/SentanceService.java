@@ -2,7 +2,7 @@ package com.maryna.LanguageCard.Services;
 
 import com.maryna.LanguageCard.Models.SentanceModel;
 import com.maryna.LanguageCard.Repositories.*;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +32,7 @@ public class SentanceService {
         return sentence.get();
     }
 
-    @Transactional()
+    @Transactional
     public SentanceModel create(SentanceModel sentanceModel, int cardId) throws BadRequestException {
         if (!_cardRepository.exists(cardId)) {
             throw new BadRequestException("There is no such a card!");

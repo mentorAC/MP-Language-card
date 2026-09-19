@@ -1,35 +1,48 @@
 <app-page-header title="Themes" subtitle="Word sets you group your cards into.">
-  <a class="btn btn-primary" routerLink="/card">New card</a>
+  <a class="btn btn-outline-secondary" routerLink="/cards">All cards</a>
+  <a class="btn btn-primary" routerLink="/cards/new">New card</a>
 </app-page-header>
 
-<form class="surface theme-form" (ngSubmit)="submit()">
-  <input
-    class="form-control"
-    type="text"
-    name="themeName"
-    autocomplete="off"
-    [(ngModel)]="draft().name"
-    [placeholder]="isEditing() ? 'Rename the theme' : 'Name a new theme'"
-  />
+<form class="surface theme-form" [formGroup]="form" (ngSubmit)="submit()">
+  <div class="theme-form__field">
+    <label class="visually-hidden" for="themeName">Theme name</label>
+    <input
+      id="themeName"
+      class="form-control"
+      type="text"
+      formControlName="name"
+      autocomplete="off"
+      [class.is-invalid]="form.controls.name.invalid && (form.controls.name.touched || submitted())"
+      [placeholder]="isEditing() ? 'Rename the theme' : 'Name a new theme'"
+    />
+    <app-field-error
+      [control]="form.controls.name"
+      label="The theme name"
+      [submitted]="submitted()"
+    />
+  </div>
 
-  @if (isEditing()) {
-    <button type="submit" class="btn btn-primary" [disabled]="!draft().name.trim()">Save</button>
-    <button type="button" class="btn btn-ghost" (click)="resetDraft()">Cancel</button>
-    <button type="button" class="btn btn-ghost-danger" (click)="remove()">Delete</button>
-  } @else {
-    <button type="submit" class="btn btn-primary" [disabled]="!draft().name.trim()">
-      Add theme
+  <div class="theme-form__actions">
+    <button type="submit" class="btn btn-primary" [disabled]="saving()">
+      {{ isEditing() ? 'Save' : 'Add theme' }}
     </button>
-  }
+
+    @if (isEditing()) {
+      <button type="button" class="btn btn-ghost" (click)="resetForm()">Cancel</button>
+      <button type="button" class="btn btn-ghost-danger" [disabled]="saving()" (click)="remove()">
+        Delete
+      </button>
+    }
+  </div>
 </form>
 
-@if (themas().length) {
-  <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
-    @for (theme of themas(); track theme.id) {
+@if (pageData().items.length) {
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3" [class.is-loading]="loading()">
+    @for (theme of pageData().items; track theme.id) {
       <div class="col">
         <article
           class="card card-interactive h-100 theme-card"
-          [class.theme-card--editing]="draft().id === theme.id"
+          [class.theme-card--editing]="editingId() === theme.id"
         >
           <div class="card-body">
             <span class="badge-soft">#{{ theme.id }}</span>
@@ -52,7 +65,16 @@
       </div>
     }
   </div>
-} @else {
+
+  <app-pagination
+    [page]="pageData().page"
+    [size]="pageData().size"
+    [total]="pageData().total"
+    [totalPages]="pageData().totalPages"
+    label="themes"
+    (pageChange)="goToPage($event)"
+  />
+} @else if (!loading()) {
   <app-empty-state
     title="No themes yet"
     text="Add your first theme above — cards are grouped by theme."

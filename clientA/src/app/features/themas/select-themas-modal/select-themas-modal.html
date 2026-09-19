@@ -4,9 +4,9 @@
 </div>
 
 <div class="modal-body">
-  @if (themas().length) {
-    <ul class="thema-list">
-      @for (thema of themas(); track thema.id) {
+  @if (pageData().items.length) {
+    <ul class="thema-list" [class.is-loading]="loading()">
+      @for (thema of pageData().items; track thema.id) {
         <li>
           <label class="thema-option">
             <input
@@ -20,13 +20,22 @@
         </li>
       }
     </ul>
-  } @else {
+
+    <app-pagination
+      [page]="pageData().page"
+      [size]="pageData().size"
+      [total]="pageData().total"
+      [totalPages]="pageData().totalPages"
+      label="themes"
+      (pageChange)="load($event)"
+    />
+  } @else if (!loading()) {
     <p class="text-body-secondary mb-0">There are no themes yet.</p>
   }
 </div>
 
 <div class="modal-footer">
-  <span class="me-auto text-body-secondary small">{{ selectedThemas.length }} selected</span>
+  <span class="me-auto text-body-secondary small">{{ selection().length }} selected</span>
   <button type="button" class="btn btn-ghost" (click)="modal.dismiss()">Cancel</button>
-  <button type="button" class="btn btn-primary" (click)="modal.close(selectedThemas)">Done</button>
+  <button type="button" class="btn btn-primary" (click)="modal.close(selection())">Done</button>
 </div>

@@ -1,68 +1,91 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  OnInit,
-  signal,
-} from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { apiErrorMessage } from '../../../core/api-error';
 import { CardModel } from '../../../core/models/card.model';
-import { ThemaModel } from '../../../core/models/thema.model';
 import { CardService } from '../../../core/services/card.service';
-import { ThemaService } from '../../../core/services/thema.service';
-import { EmptyState } from '../../../shared/empty-state/empty-state';
 import { PageHeader } from '../../../shared/page-header/page-header';
+import { CardForm } from '../card-form/card-form';
 
+/** `/cards/:id` — one saved card: edit it, or delete it. */
 @Component({
   selector: 'app-card-page',
-  imports: [FormsModule, RouterLink, PageHeader, EmptyState],
+  imports: [RouterLink, PageHeader, CardForm],
   templateUrl: './card-page.html',
-  styleUrl: './card-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CardPage implements OnInit {
   private readonly cardService = inject(CardService);
-  private readonly themaService = inject(ThemaService);
+  private readonly toastr = inject(ToastrService);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
-  readonly cards = signal<CardModel[]>([]);
-  readonly themaId = signal(0);
-  private readonly themas = signal<ThemaModel[]>([]);
-
-  /** Derived, so the title follows the theme even if the query param changes. */
-  readonly themaName = computed(
-    () => this.themas().find((t) => t.id === this.themaId())?.name ?? '',
-  );
-
-  /** Quick-add form at the top of the list: a word, nothing else. */
-  readonly draft = signal<CardModel>(new CardModel());
+  readonly card = signal<CardModel | null>(null);
+  readonly loading = signal(true);
+  readonly saving = signal(false);
 
   ngOnInit(): void {
-    this.route.queryParamMap.subscribe((params) => {
-      const themaId = Number(params.get('thema'));
-      this.themaId.set(themaId);
+    this.route.paramMap.subscribe((params) => {
+      const id = Number(params.get('id'));
+      if (!id) {
+        this.router.navigate(['/cards/new']);
+        return;
+      }
 
-      this.cardService.getAll(themaId).subscribe((cards) => this.cards.set(cards));
+      this.load(id);
     });
-
-    this.themaService.getAll().subscribe((themas) => this.themas.set(themas));
   }
 
-  create(): void {
-    const word = this.draft().word.trim();
-    if (!word) {
+  save(card: CardModel): void {
+    this.saving.set(true);
+
+    this.cardService.update(card).subscribe({
+      next: (saved) => {
+        this.saving.set(false);
+        // The saved card comes back with its theme names resolved, so the form
+        // is re-seeded from the server's version rather than from what we sent.
+        this.card.set(saved);
+        this.toastr.success('The card is saved!');
+      },
+      error: (error: unknown) => {
+        this.saving.set(false);
+        this.toastr.error(apiErrorMessage(error, 'Could not save the card'));
+      },
+    });
+  }
+
+  remove(): void {
+    const card = this.card();
+    if (!card) {
       return;
     }
 
-    // Without the theme id the new card would be created but would not belong
-    // to the list we are looking at.
-    this.draft().themaIds = this.themaId() ? [this.themaId()] : [];
+    this.saving.set(true);
+    this.cardService.delete(card.id).subscribe({
+      next: () => {
+        this.saving.set(false);
+        this.toastr.success('The card is deleted');
+        this.router.navigate(['/cards']);
+      },
+      error: (error: unknown) => {
+        this.saving.set(false);
+        this.toastr.error(apiErrorMessage(error, 'Could not delete the card'));
+      },
+    });
+  }
 
-    this.cardService.create(this.draft()).subscribe((created) => {
-      this.cards.update((list) => [...list, created]);
-      this.draft.set(new CardModel());
+  private load(id: number): void {
+    this.loading.set(true);
+    this.cardService.getById(id).subscribe({
+      next: (card) => {
+        this.card.set(card);
+        this.loading.set(false);
+      },
+      error: (error: unknown) => {
+        this.loading.set(false);
+        this.toastr.error(apiErrorMessage(error, 'Could not load the card'));
+        this.router.navigate(['/cards']);
+      },
     });
   }
 }
